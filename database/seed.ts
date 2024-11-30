@@ -1,7 +1,7 @@
 import { Database, Statement } from "bun:sqlite"; // You can use this if you prefer Bun
 
 // import Database from "better-sqlite3";
-// import { Statement } from "better-sqlite3";
+// import type { Database as DatabaseType, Statement } from "better-sqlite3";
 
 // -----------------------------------------------------------------------------
 // Database schema/Types
@@ -46,7 +46,7 @@ interface UserEvent {
 // Utility functions
 // -----------------------------------------------------------------------------
 
-const db: Database = new Database("./main.db");
+const db: Database = new Database("./database/main.db");
 
 function getTimestamp(): number {
   // Date range of data: 01/05/2022 to 01/06/2022
@@ -120,6 +120,12 @@ function getRandomUserInteraction(tracks: { id: number }[]): {
   return { eventType: "unknown_event", eventTarget: null };
 }
 
+// DRY function to get ids from a table
+function getIdsFromTable(tableName: string): { id: number }[] {
+  const query = db.prepare(`SELECT id FROM ${tableName}`);
+  return query.all() as { id: number }[];
+}
+
 // -----------------------------------------------------------------------------
 // Seeding functions
 // -----------------------------------------------------------------------------
@@ -174,8 +180,7 @@ function seedUserSessions(amount: number): void {
   `);
 
   // Get all user ids
-  const userIdsQuery: Statement = db.prepare("SELECT id FROM users");
-  const userIds: { id: number }[] = userIdsQuery.all();
+  const userIds = getIdsFromTable('users');
 
   // Seed the user sessions table
   const userSessions: UserSession[] = Array.from(
@@ -273,12 +278,10 @@ function seedVisits(amount: number): void {
   `);
 
   // Get all artist ids
-  const artistIdsQuery: Statement = db.prepare("SELECT id FROM artists");
-  const artistIds: { id: number }[] = artistIdsQuery.all();
+  const artistIds = getIdsFromTable('artists');
 
   // Get all sessions
-  const sessionsQuery: Statement = db.prepare("SELECT id FROM sessions");
-  const sessions: { id: number }[] = sessionsQuery.all();
+  const sessions = getIdsFromTable('sessions');
 
   // Generate mock data for visits
   const visits: Visit[] = Array.from({ length: amount }, () => {
@@ -330,16 +333,13 @@ function seedUserEvents(amount: number): void {
   `);
 
   // Get all user ids
-  const userIdsQuery: Statement = db.prepare("SELECT id FROM users");
-  const userIds: { id: number }[] = userIdsQuery.all();
+  const userIds = getIdsFromTable('users');
 
   // Get all artist ids
-  const artistIdsQuery: Statement = db.prepare("SELECT id FROM artists");
-  const artistIds: { id: number }[] = artistIdsQuery.all();
+  const artistIds = getIdsFromTable('artists');
 
   // Get all tracks
-  const tracksQuery: Statement = db.prepare("SELECT id FROM tracks");
-  const tracks: { id: number }[] = tracksQuery.all();
+  const tracks = getIdsFromTable('tracks');
 
   // Seed the user_events table
   const userEvents: UserEvent[] = Array.from({ length: amount }, () => {
