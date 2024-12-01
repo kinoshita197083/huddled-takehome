@@ -36,8 +36,3 @@ ORDER BY
     data,
   };
 };
-
-// Helper function for debug logging
-function formatDuration(ms: number): string {
-  return new Date(ms).toISOString().substr(11, 8);
-}

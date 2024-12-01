@@ -98,7 +98,8 @@ function getRandomUserInteraction(tracks: { id: number }[]): {
   const totalWeight = events.reduce((sum, event) => sum + event.weight, 0);
 
   // Generate a random number between 0 and total weight
-  const random = Math.random() * totalWeight;
+  // TODO: 0 inclusive & totalWeight inclusive
+  const random = Math.floor(Math.random() * (totalWeight + 1)); // TODO: check if this is correct
 
   // Find the event that matches the random number
   let cumulativeWeight = 0;
