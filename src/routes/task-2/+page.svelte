@@ -4,6 +4,6 @@
     let { data }: { data: PageData } = $props();
 </script>
 
-<div class="flex flex-col min-h-full">
+<div class="flex flex-col min-h-full bg-slate-950">
     <DataVisualization aggregatedData={data.data} />
 </div>
